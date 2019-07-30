@@ -7,6 +7,7 @@ import random
 import schedule
 import time
 import threading
+import getpass
 
 def timer():
     while 1:
@@ -121,7 +122,7 @@ def job(username,password,in_or_out):
     
 def main():
     username = input('username: ')
-    password = input('password: ')
+    password = getpass.getpass('password: ')
     threading.Thread(target=timer).start()
     #job(username,password,'out')
     #time.sleep(3)
