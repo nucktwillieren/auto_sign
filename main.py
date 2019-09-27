@@ -17,7 +17,7 @@ def timer():
         except:
             break
 
-class NcuWeb:
+class Ncu:
     def __init__(self,username,password):
         self._username = username
         self._password = password
@@ -27,7 +27,7 @@ class NcuWeb:
         
     def _restart_ncu_session(self):
         self.s = requests.session()
-        self.r = self.s.get('https://portal.ncu.edu.tw/login')
+        res = self.s.get('https://portal.ncu.edu.tw/login')
         self.NID = self.s.cookies['NID']
         self.j_session_id = self.s.cookies['JSESSIONID']
     
@@ -116,24 +116,37 @@ class NcuWeb:
                 time.sleep(2)  
 
 def job(username,password,in_or_out):
-    n = NcuWeb(username,password)
+    n = Ncu(username,password)
     n.login()
     n.sign(in_or_out)
     
 def main():
-    username = input('username: ')
-    password = getpass.getpass('password: ')
+    username = input('Username: ')
+    password = getpass.getpass('Password: ')
+    sign_in_time = input('When to Sign In? ')
+    sign_out_time = input('When to Sign Out? ')
+
     threading.Thread(target=timer).start()
     #job(username,password,'out')
     #time.sleep(3)
     #job(username,password,'out')
     
-    schedule.every().day.at("08:30").do(job,username=username,password=password,in_or_out='in')
-    schedule.every().day.at("20:00").do(job,username=username,password=password,in_or_out='out')
+    schedule.every().day.at(sign_in_time).do(
+        job,
+        username=username,
+        password=password,
+        in_or_out='in'
+    )
+    schedule.every().day.at(sign_out_time).do(
+        job,
+        username=username,
+        password=password,
+        in_or_out='out'
+    )
 
     while 1:
         schedule.run_pending()
-        time.sleep(300)
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
